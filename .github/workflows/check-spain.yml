@@ -12,11 +12,13 @@ jobs:
       - name: Obtener JSON de la API
         id: api
         run: |
+          echo "🔍 Llamando a la API..."
           response=$(curl -s "https://upgrader.cc/API/?stock")
           echo "Response obtenida:"
           echo "$response"
           # Guardar para debug
           echo "$response" > response.json
+          # Guardar en output de GitHub Actions
           echo "response=$response" >> $GITHUB_OUTPUT
 
       - name: Comprobar si existe Spain ES

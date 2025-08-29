@@ -2,8 +2,8 @@ name: Check Spain ES in API
 
 on:
   schedule:
-    - cron: "*/1 * * * *" # cada minuto (aprox)
-  workflow_dispatch:       # también se puede ejecutar manualmente
+    - cron: "*/1 * * * *" # cada minuto aprox
+  workflow_dispatch:
 
 jobs:
   check-api:
@@ -12,16 +12,18 @@ jobs:
       - name: Obtener JSON de la API
         id: api
         run: |
-          echo "🔍 Llamando a la API..."
           response=$(curl -s "https://upgrader.cc/API/?stock")
           echo "Response obtenida:"
           echo "$response"
+          # Guardar para debug
+          echo "$response" > response.json
           echo "response=$response" >> $GITHUB_OUTPUT
 
       - name: Comprobar si existe Spain ES
         id: spain
         run: |
-          spain=$(echo "${{ steps.api.outputs.response }}" | jq '.[] | select(.country_code=="ES")')
+          # Filtrar Spain de manera segura
+          spain=$(jq '.[] | select(.country_code=="ES")' response.json 2>/dev/null || echo "")
           echo "Resultado del filtro Spain ES:"
           echo "$spain"
           if [ -n "$spain" ]; then

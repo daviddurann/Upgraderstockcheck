@@ -12,38 +12,38 @@ jobs:
       - name: Obtener JSON de la API
         id: api
         run: |
-          echo "🔍 Llamando a la API..."
-          response=$(curl -s "https://upgrader.cc/API/?stock")
-          echo "Response obtenida:"
-          echo "$response"
-          # Guardar para debug
-          echo "$response" > response.json
-          # Guardar en output de GitHub Actions
-          echo "response=$response" >> $GITHUB_OUTPUT
+echo "🔍 Llamando a la API..."
+response=$(curl -s "https://upgrader.cc/API/?stock")
+echo "Response obtenida:"
+echo "$response"
+# Guardar para debug
+echo "$response" > response.json
+# Guardar en output de GitHub Actions
+echo "response=$response" >> $GITHUB_OUTPUT
 
       - name: Comprobar si existe Spain ES
         id: spain
         run: |
-          # Filtrar Spain de manera segura
-          spain=$(jq '.[] | select(.country_code=="ES")' response.json 2>/dev/null || echo "")
-          echo "Resultado del filtro Spain ES:"
-          echo "$spain"
-          if [ -n "$spain" ]; then
-            echo "found=true" >> $GITHUB_OUTPUT
-            echo "spain_data=$spain" >> $GITHUB_OUTPUT
-          else
-            echo "found=false" >> $GITHUB_OUTPUT
+# Filtrar Spain de manera segura
+spain=$(jq '.[] | select(.country_code=="ES")' response.json 2>/dev/null || echo "")
+echo "Resultado del filtro Spain ES:"
+echo "$spain"
+if [ -n "$spain" ]; then
+  echo "found=true" >> $GITHUB_OUTPUT
+  echo "spain_data=$spain" >> $GITHUB_OUTPUT
+else
+  echo "found=false" >> $GITHUB_OUTPUT
+fi
 
       - name: Enviar alerta a Telegram
         if: steps.spain.outputs.found == 'true'
         run: |
-          echo "🚨 Spain ES encontrado, enviando alerta..."
-          curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage \
-            -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
-            -d text="⚠️ ¡Spain ES detectado en la API!\n\n${{ steps.spain.outputs.spain_data }}"
+echo "🚨 Spain ES encontrado, enviando alerta..."
+curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage \
+  -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
+  -d text="⚠️ ¡Spain ES detectado en la API!\n\n${{ steps.spain.outputs.spain_data }}"
 
       - name: Notificar si no se encontró Spain ES
         if: steps.spain.outputs.found == 'false'
         run: |
-          echo "✅ Spain ES no se encontró en la API."
-          
+echo "✅ Spain ES no se encontró en la API."

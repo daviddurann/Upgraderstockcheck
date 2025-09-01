@@ -2,7 +2,7 @@ name: Check Spain ES in API
 
 on:
   schedule:
-    - cron: "*/5 * * * *" # cada minuto aprox
+    - cron: "*/3 * * * *" # cada 3 minuto aprox
   workflow_dispatch:
 
 jobs:
